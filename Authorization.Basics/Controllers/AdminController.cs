@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace Authorization.Basics.Controllers
 {
@@ -17,15 +20,30 @@ namespace Authorization.Basics.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            return View();
+            if(!ModelState.IsValid)
+            {
+                return View(model); 
+            }
+            var claims = new List<Claim>
+            {
+                new Claim("Demo","Value")
+            };
+            var claimIdentity = new ClaimsIdentity(claims,"Cookie");
+            var claimPrincipal = new ClaimsPrincipal(claimIdentity);
+            await HttpContext.SignInAsync(claimPrincipal);
+
+            return Redirect(model.ReturnUrl);
         }
     }
     public class LoginViewModel
     {
+        [Required]
         public string UserName { get; set; }
+        [Required]
         public string Password { get; set; }
+        [Required]
         public string ReturnUrl { get; set; }
     }
 }
