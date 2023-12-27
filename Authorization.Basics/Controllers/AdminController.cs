@@ -13,6 +13,16 @@ namespace Authorization.Basics.Controllers
         {
             return View();
         }
+        [Authorize(Roles = "Administrator")]
+        public IActionResult Administrator()
+        {
+            return View();
+        }
+        [Authorize(Roles = "Manager")]
+        public IActionResult Manager()
+        {
+            return View();
+        }
         [AllowAnonymous]
         public IActionResult Login(string returnUrl)
         {
@@ -22,28 +32,24 @@ namespace Authorization.Basics.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                return View(model); 
+                return View(model);
             }
             var claims = new List<Claim>
             {
-                new Claim("Demo","Value")
+                new Claim(ClaimTypes.Name,model.UserName)
             };
-            var claimIdentity = new ClaimsIdentity(claims,"Cookie");
+            var claimIdentity = new ClaimsIdentity(claims, "Cookie");
             var claimPrincipal = new ClaimsPrincipal(claimIdentity);
             await HttpContext.SignInAsync(claimPrincipal);
 
             return Redirect(model.ReturnUrl);
         }
-    }
-    public class LoginViewModel
-    {
-        [Required]
-        public string UserName { get; set; }
-        [Required]
-        public string Password { get; set; }
-        [Required]
-        public string ReturnUrl { get; set; }
+        public IActionResult LogOff()
+        {
+            HttpContext.SignOutAsync("Cookie");
+            return Redirect("/Home/Index");
+        }
     }
 }

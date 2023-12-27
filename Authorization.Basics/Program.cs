@@ -1,7 +1,23 @@
+using System.Security.Claims;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication("Cookie").AddCookie("Cookie",config=>config.LoginPath="/Admin/Login");
-builder.Services.AddAuthorization();
+builder.Services.AddAuthentication("Cookie").AddCookie("Cookie",
+    config => {
+        config.LoginPath = "/Admin/Login";
+        config.AccessDeniedPath = "/Home/AccessDenied";
+        }
+    );
+
+//Add roles 
+builder.Services.AddAuthorization(
+    options => options.AddPolicy("Administrator",
+    builder => builder.RequireClaim(ClaimTypes.Role, "Administrator")
+    ));
+builder.Services.AddAuthorization(
+    options => options.AddPolicy("Manager",
+    builder => builder.RequireClaim(ClaimTypes.Role, "Manager")
+    ));
 
 builder.Services.AddControllersWithViews();
 
