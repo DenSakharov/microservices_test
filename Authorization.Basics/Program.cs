@@ -11,13 +11,23 @@ builder.Services.AddAuthentication("Cookie").AddCookie("Cookie",
 
 //Add roles 
 builder.Services.AddAuthorization(
-    options => options.AddPolicy("Administrator",
-    builder => builder.RequireClaim(ClaimTypes.Role, "Administrator")
-    ));
-builder.Services.AddAuthorization(
-    options => options.AddPolicy("Manager",
-    builder => builder.RequireClaim(ClaimTypes.Role, "Manager")
-    ));
+    options =>
+    {
+        options.AddPolicy("Administrator",
+        builder => builder.RequireClaim(ClaimTypes.Role, "Administrator")
+        );
+
+        //different types roles in one
+        options.AddPolicy("Manager",
+            builder=> builder.RequireAssertion(x=>x.User.HasClaim(ClaimTypes.Role,"Manager" )
+            || x.User.HasClaim(ClaimTypes.Role, "Administrator") )
+            );
+    }
+    );
+//builder.Services.AddAuthorization(
+//    options => options.AddPolicy("Manager",
+//    builder => builder.RequireClaim(ClaimTypes.Role, "Manager")
+//    ));
 
 builder.Services.AddControllersWithViews();
 

@@ -13,12 +13,12 @@ namespace Authorization.Basics.Controllers
         {
             return View();
         }
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "Administrator")]
         public IActionResult Administrator()
         {
             return View();
         }
-        [Authorize(Roles = "Manager")]
+        [Authorize(Policy = "Manager")]
         public IActionResult Manager()
         {
             return View();
@@ -38,7 +38,9 @@ namespace Authorization.Basics.Controllers
             }
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name,model.UserName)
+                new Claim(ClaimTypes.Name, model.UserName),
+                new Claim(ClaimTypes.Role,"Administrator")
+                
             };
             var claimIdentity = new ClaimsIdentity(claims, "Cookie");
             var claimPrincipal = new ClaimsPrincipal(claimIdentity);
