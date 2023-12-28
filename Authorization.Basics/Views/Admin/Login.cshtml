@@ -4,6 +4,9 @@
 <a asp-controller="Home" asp-action="Index">Home</a>
 
 <form asp-controller="Admin" asp-action="Login" method="post">
+    <div asp-validation-summary="All">
+
+    </div>
     <input hidden asp-for="ReturnUrl"/>
     <div>
         <label>UserName</label>
