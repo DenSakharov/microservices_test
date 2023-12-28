@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Authentication;
+using System.ComponentModel.DataAnnotations;
 
 namespace Authorization.Basics.Controllers
 {
@@ -10,5 +11,6 @@ namespace Authorization.Basics.Controllers
         public string Password { get; set; }
         [Required]
         public string ReturnUrl { get; set; }
+        public IEnumerable<AuthenticationScheme> ExternalProviders { get; internal set; }
     }
 }

@@ -1,13 +1,8 @@
-﻿using Authorization.Basics.Data;
-using Authorization.Basics.Entities;
-using Microsoft.AspNetCore.Authentication;
+﻿using Authorization.Basics.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
-using System.Text;
 
 namespace Authorization.Basics.Controllers
 {
@@ -37,9 +32,43 @@ namespace Authorization.Basics.Controllers
             return View();
         }
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl)
+        public async Task<IActionResult> Login(string returnUrl)
         {
-            return View();
+            var externalProviders = await _signInManager.GetExternalAuthenticationSchemesAsync();
+
+            return View(new LoginViewModel
+            {
+                ReturnUrl = returnUrl,
+                ExternalProviders = externalProviders
+            });
+        }
+        [AllowAnonymous]
+        public  IActionResult ExternalLogin(string provider, string returnUrl)
+        {
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback),"Admin",new {returnUrl});
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+        public async Task< IActionResult> ExternalLoginCallback(string returnUrl)
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+                return RedirectToAction("Login");
+
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, false);
+            if (result.Succeeded)
+            {
+
+            }
+            return RedirectToAction("RegisterExternal",new ExternalLoginViewModel
+            {
+                ReturnUrl= returnUrl,
+                UserName=info.Principal.FindFirstValue(ClaimTypes.Name)
+            });
+        }
+        public IActionResult RegisterExternal(ExternalLoginViewModel model)
+        {
+            return View(model);
         }
         [HttpPost]
         [AllowAnonymous]

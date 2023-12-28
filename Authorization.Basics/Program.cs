@@ -29,6 +29,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 //        config.AccessDeniedPath = "/Home/AccessDenied";
 //        }
 //    );
+IConfiguration configuration = new ConfigurationBuilder()
+           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+           .Build();
+builder.Services.AddAuthentication().AddFacebook(config => {
+    config.AppId = configuration["Authentication:Facebook:AppId"];
+    config.AppSecret = configuration["Authentication:Facebook:AppSecret"];
+    }) ;
 
 builder.Services.ConfigureApplicationCookie(
     config =>
