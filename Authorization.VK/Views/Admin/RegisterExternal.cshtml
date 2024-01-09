@@ -1,0 +1,15 @@
+﻿@model Authorization.VK.Controllers.ExternalLoginViewModel
+
+<form asp-controller="Admin" asp-action="Login" method="post">
+    <div asp-validation-summary="All" />
+    <input hidden asp-for="ReturnUrl" />
+    <div>
+        <label>UserName</label>
+        <input asp-for="UserName" />
+        <span asp-validation-for="UserName"></span>
+    </div>
+
+    <p>
+        <button type="submit">Save</button>
+    </p>
+</form>
