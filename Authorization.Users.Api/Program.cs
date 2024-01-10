@@ -1,5 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Logging.AddConsole();
 builder.Services.AddHttpClient();
 builder.Services.AddControllersWithViews();
 
